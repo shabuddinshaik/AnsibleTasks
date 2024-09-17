@@ -1,0 +1,3 @@
+---
+# defaults file for upgrade_win_package
+security_package_name: "SecurityPackage"

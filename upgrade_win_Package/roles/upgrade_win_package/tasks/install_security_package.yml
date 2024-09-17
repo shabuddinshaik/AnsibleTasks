@@ -1,0 +1,44 @@
+---
+- name: Ping Windows Machine
+  win_ping:
+  tags: [url]
+
+- name: Download security package MSU
+  win_get_url:
+    url: "{{ security_update_url }}"
+    dest: "C:\\Temp\\{{ security_update_url | regex_search('[^/]+$') }}"
+  tags: [url]
+
+- name: Install security package using PowerShell
+  win_shell: |
+    Start-Process 'wusa.exe' -ArgumentList '/quiet', '/norestart', 'C:\\Temp\\{{ security_update_url | regex_search('[^/]+$') }}' -Wait
+  register: install_result
+  args:
+    executable: powershell
+  tags: [url]
+
+- name: Verify if any security update is installed
+  win_shell: |
+    $updates = Get-HotFix | Where-Object { $_.Description -eq 'Update' }
+    if ($updates) {
+      $updates | Format-Table -Property Description, HotFixID
+    } else {
+      Write-Output "No updates installed."
+    }
+  register: update_check
+  args:
+    executable: powershell
+  tags: [url]
+
+- name: Check if a reboot is required
+  win_shell: |
+    (Get-WmiObject -Class Win32_ComputerSystem | Select-Object -ExpandProperty RebootRequired) -eq $true
+  register: reboot_required
+  args:
+    executable: powershell
+  tags: [url]
+
+- name: Reboot if necessary
+  win_reboot:
+  when: reboot_required.stdout == "True"
+  tags: [url]

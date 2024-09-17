@@ -1,0 +1,27 @@
+---
+- name: Ensure Chocolatey is installed on Windows servers
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Install Chocolatey
+      win_chocolatey:
+        name: chocolatey
+        state: present
+      become: true
+      tags: [chocolatey]
+
+- name: Update Windows Security Package using Chocolatey
+  hosts: all
+  roles:
+    - role: windows_security_package_chocolatey
+      security_package_name: "securitypackage"
+  tags: [chocolatey]
+
+- name: Update Windows Security Package using URL
+  hosts: all
+  roles:
+    - role: windows_security_package_URL
+      security_update_url: "https://catalog.s.download.windowsupdate.com/c/msdownload/update/software/secu/2024/03/windows10.0-kb5036604-x64_b83a6ea8550712befd70d19518d8d519426631a0.msu"
+  tags: [url]
+
+
