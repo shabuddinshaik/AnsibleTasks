@@ -1,15 +1,5 @@
 ---
 # tasks file for splunk_forwarder_pkg_update
-- name: Include vault vars
-  ansible.builtin.include_vars:
-    dir: vars/secrets
-  ignore_errors: yes
-  tags: [variable_directories]
-  
-- name: Validate inventories facts
-  ansible.builtin.include_tasks: ci_facts.yml
-  tags: [node_facts]
-
 - include_tasks: detect_os.yml
   tags: [splunk_version]
 
