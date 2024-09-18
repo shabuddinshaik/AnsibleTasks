@@ -1,0 +1,13 @@
+---
+# handlers file for splunk_forwarder_pkg_update
+- name: Restart Splunk Forwarder
+  service:
+    name: splunkforwarder
+    state: restarted
+  when: ansible_os_family == "RedHat" or ansible_os_family == "Debian"
+
+- name: Restart Splunk Forwarder (Windows)
+  win_service:
+    name: SplunkForwarder
+    state: restarted
+  when: ansible_os_family == "Windows"

@@ -1,0 +1,26 @@
+---
+- name: Print all available facts
+  ansible.builtin.debug:
+    var: ansible_facts
+    verbosity: 2
+  tags: [node_facts]
+- name: Print some debug information
+  vars:
+    msg: |
+      Distribution: {{ ansible_distribution }}
+      Version: {{ ansible_distribution_version }}
+      File Path: {{ ansible_facts['distribution_file_path'] }}
+      Distribution_[] :{{ ansible_facts['distribution'] }}
+      Major Version: {{ ansible_facts['distribution_major_version'] }}
+      os_family: {{ ansible_facts['os_family'] }}
+      all_ipv4_addresses: {{ ansible_facts.all_ipv4_addresses }}
+      default_ipv4.address: {{ ansible_facts.default_ipv4.address }}
+      python.executable: {{ ansible_facts.python.executable }}
+      domain: {{ ansible_facts.domain }}
+      hostname: {{ ansible_facts.hostname }}
+  ansible.builtin.debug:
+    msg: "{{ msg.split('\n') }}"
+  ignore_errors: true
+  failed_when: false
+  when: ansible_facts | length > 0
+  tags: [node_facts_debug_info]

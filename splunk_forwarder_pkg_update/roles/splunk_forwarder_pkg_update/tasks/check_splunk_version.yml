@@ -1,0 +1,62 @@
+---
+- name: Gather package facts (Linux)
+  ansible.builtin.package_facts:
+  when: os_family != "Windows"
+  tags: [splunk_version]
+
+- name: Print all available facts for debugging
+  ansible.builtin.debug:
+    var: ansible_facts
+  when: os_family != "Windows"
+  tags: [splunk_version]
+
+- name: Check if Splunk Forwarder package is installed (Linux)
+  ansible.builtin.debug:
+    msg: "Splunk Forwarder package found with version: {{ ansible_facts.ohai_packages['splunkforwarder'].version }}"
+  when: os_family != "Windows" and ansible_facts.packages is defined and 'splunkforwarder' in ansible_facts.packages
+  tags: [splunk_version]
+
+- name: Fail if Splunk Forwarder package is not installed (Linux)
+  ansible.builtin.fail:
+    msg: "Splunk Forwarder package not found on the system."
+  when: os_family != "Windows" and (ansible_facts.ohai_packages is not defined or 'splunkforwarder' not in ansible_facts.packages)
+  tags: [splunk_version]
+
+- name: Set fact for installed Splunk Forwarder version (Linux)
+  ansible.builtin.set_fact:
+    installed_splunk_version: "{{ ansible_facts.ohai_packages['splunkforwarder'].version }}"
+  when: os_family != "Windows" and 'splunkforwarder' in ansible_facts.packages
+  tags: [splunk_version]
+
+- name: Display Splunk version (Linux)
+  ansible.builtin.debug:
+    msg: "Splunk version is {{ installed_splunk_version }}"
+  when: os_family != "Windows" and installed_splunk_version is defined
+  tags: [splunk_version]
+
+- name: Check installed Splunk Forwarder version (Windows)
+  ansible.windows.win_shell: |
+    $splunkPath = "C:\Program Files\SplunkUniversalForwarder\bin\splunk.exe"
+    if (Test-Path $splunkPath) {
+      & (Get-Item $splunkPath).FullName version
+    } else {
+      Write-Output "Splunk executable not found."
+    }
+  register: splunk_version_output
+  when: os_family == "Windows"
+  changed_when: false
+  check_mode: no
+  tags: [splunk_version]
+
+
+- name: Set fact for installed Splunk Forwarder version (Windows)
+  ansible.builtin.set_fact:
+    installed_splunk_version: "{{ splunk_version_output.stdout | regex_search('Splunk (\\S+)', '\\1') }}"
+  when: os_family == "Windows"
+  tags: [splunk_version]
+
+- name: Compare installed and desired Splunk Forwarder versions
+  ansible.builtin.set_fact:
+    splunk_version_mismatch: "{{ installed_splunk_version != splunk_version | default('9.2.1') }}"
+  when: installed_splunk_version is defined
+  tags: [splunk_version]

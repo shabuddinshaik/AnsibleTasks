@@ -1,0 +1,95 @@
+---
+- name: Print os_family fact
+  ansible.builtin.debug:
+    msg: "os_family is {{ os_family }}"
+  tags: [splunk_install]
+
+- name: Download Splunk Forwarder package (Debian Linux)
+  ansible.builtin.get_url:
+    url: "{{ splunk_package_url_debian }}"
+    dest: /tmp/splunkforwarder-{{ splunk_version }}-linux-2.6-amd64.deb
+  when: ansible_facts['os_family'] == 'Debian'
+  tags: [splunk_install]
+
+- name: Install Splunk Forwarder package (Debian Linux)
+  ansible.builtin.apt:
+    deb: /tmp/splunkforwarder-{{ splunk_version }}-linux-2.6-amd64.deb
+    state: present
+  when: ansible_facts['os_family'] == 'Debian'
+  tags: [splunk_install]
+
+- name: Download Splunk Forwarder package (RedHat Linux)
+  ansible.builtin.get_url:
+    url: "{{ splunk_package_url_redhat }}"
+    dest: /tmp/splunkforwarder-{{ splunk_version }}-linux-x86_64.tgz
+  when: ansible_facts['os_family'] == 'RedHat'
+  tags: [splunk_install]
+
+- name: Extract Splunk Forwarder package (RedHat Linux)
+  ansible.builtin.command:
+    cmd: tar -xzf /tmp/splunkforwarder-{{ splunk_version }}-linux-x86_64.tgz -C /opt/
+  when: ansible_facts['os_family'] == 'RedHat'
+  become: true
+  become_user: root
+  tags: [splunk_install]
+
+- name: Start Splunk Forwarder service (Linux)
+  ansible.builtin.command:
+    cmd: /opt/splunkforwarder/bin/splunk start --accept-license --answer-yes --no-prompt
+  when: ansible_facts['os_family'] == 'RedHat'
+  become: true
+  become_user: root
+  tags: [splunk_license]
+
+- name: Show installed Splunk Forwarder version (Linux)
+  ansible.builtin.command:
+    cmd: /opt/splunkforwarder/bin/splunk --version 
+  register: splunk_version_output
+  when: ansible_facts['os_family'] != 'Windows'
+  become: true
+  become_user: root
+  tags: [splunk_install]
+
+- name: Print installed Splunk Forwarder version (Linux)
+  ansible.builtin.debug:
+    msg: "Installed Splunk Forwarder version is {{ splunk_version_output.stdout }}"
+  when: ansible_facts['os_family'] != 'Windows'
+  tags: [splunk_install]
+
+- name: Download Splunk Forwarder package (Windows)
+  ansible.windows.win_get_url:
+    url: "{{ splunk_package_windows_url }}"
+    dest: C:\temp\splunkforwarder-{{ splunk_version }}-x64-release.msi
+  when: ansible_facts['os_family'] == "Windows"
+  tags: [splunk_install]
+
+- name: Install Splunk Universal Forwarder
+  win_shell: |
+    Start-Process msiexec.exe -ArgumentList '/i C:\temp\splunkforwarder--x64-release.msi RECEIVING_INDEXER="indexer1:9997" WINEVENTLOG_SEC_ENABLE=1 WINEVENTLOG_SYS_ENABLE=1 AGREETOLICENSE=Yes /quiet' -Wait
+  args:
+    executable: powershell
+  tags: [splunk_install]
+
+- name: Verify Splunk Forwarder Installation
+  win_shell: |
+    if (Test-Path "C:\Program Files\SplunkUniversalForwarder") {
+      Write-Host "Splunk Forwarder is installed."
+    } else {
+      Write-Error "Splunk Forwarder installation not found."
+    }
+  when: ansible_facts['os_family'] == "Windows"
+
+- name: Start Splunk Forwarder service
+  win_service:
+    name: SplunkForwarder
+    start_mode: auto
+    state: started
+  when: ansible_facts['os_family'] == "Windows"
+
+
+- name: Show installed Splunk Forwarder version (Windows)
+  ansible.windows.win_shell:
+    _raw_params: 'C:\Program Files\SplunkUniversalForwarder\bin\splunk.exe --version'
+  register: splunk_version_output_windows
+  when: ansible_facts['os_family'] == 'Windows'
+  tags: [splunk_install]

@@ -1,0 +1,13 @@
+[splunk]
+start = true
+
+[default]
+host = {{ ansible_hostname }}
+
+[tcpout]
+defaultGroup = default-autolb-group
+
+[tcpout:default-autolb-group]
+server = {{ splunk_forwarder_indexer }}
+
+[tcpout-server://{{ splunk_forwarder_indexer }}]

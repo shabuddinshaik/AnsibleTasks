@@ -1,0 +1,7 @@
+---
+# defaults file for splunk_forwarder_pkg_update
+splunk_forwarder_state: present
+splunk_version: ""
+splunk_package_url_redhat: "https://download.splunk.com/products/universalforwarder/releases/{{ splunk_version }}/linux/splunkforwarder-{{ splunk_version }}-78803f08aabb-Linux-x86_64.tgz"
+splunk_package_url_debian: "https://download.splunk.com/products/universalforwarder/releases/{{ splunk_version }}/linux/splunkforwarder-{{ splunk_version }}-78803f08aabb-linux-2.6-amd64.deb"
+splunk_package_windows_url: "https://download.splunk.com/products/universalforwarder/releases/9.3.0/windows/splunkforwarder-9.3.0-51ccf43db5bd-x64-release.msi?_gl=1*17cd9vt*_gcl_aw*R0NMLjE3MjU0NjE2NzUuQ2owS0NRandpdUMyQmhEU0FSSXNBTE9WZkJLWTBpclRYNEhLRjk4eDh0TWZCbnJTb2ZzODBqbW1wRWpfZ0g2X2xpbG16Z2JWNFBqZkpPQWFBdExBRUFMd193Y0I.*_gcl_au*MTczNDg1NTc3OC4xNzI1NDYxMTk0*FPAU*MTczNDg1NTc3OC4xNzI1NDYxMTk0*_ga*MjY2NDg2NzgyLjE3MjU0NjExOTM.*_ga_5EPM2P39FV*MTcyNTQ2MTE5NC4xLjEuMTcyNTQ2MTcxOC4wLjAuMTMxMTgwMjUyNg..*_fplc*bDAlMkZXWE9qcTMyb2dIaFBFZEdKQmRPNzVhckdvcWNqdlF4N2NVJTJGJTJGSjNoJTJGWlFUeVRJTTNUUVJ1enNjRiUyQkdxbjN0YUJNS2tBUlJkZSUyQms0TkZ2T3R6MDhTS1Z3MU1YMGFDbDg2ZHRxc0ZseklObm5yREQwdVFJcWZWMkFkcFlRJTNEJTNE"

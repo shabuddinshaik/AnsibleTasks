@@ -1,0 +1,36 @@
+---
+- name: Stop Splunk Forwarder service (Linux)
+  ansible.builtin.systemd:
+    name: splunkforwarder
+    state: stopped
+    ignore_errors: yes
+  when: os_family != "Windows"
+  tags: [splunk_remove]
+
+- name: Stop Splunk Forwarder service (Windows)
+  ansible.windows.win_service:
+    name: SplunkForwarder
+    state: stopped
+  when: os_family == "Windows"
+  tags: [splunk_remove]
+
+- name: Remove existing Splunk Forwarder package (Debian Linux)
+  ansible.builtin.apt:
+    name: splunkforwarder
+    state: absent
+  when: ansible_facts['os_family'] == 'Debian'
+  tags: [splunk_remove]
+
+- name: Remove existing Splunk Forwarder package (RedHat Linux)
+  ansible.builtin.yum:
+    name: splunkforwarder
+    state: absent
+  when: ansible_facts['os_family'] == 'RedHat'
+  tags: [splunk_remove]
+
+- name: Remove existing Splunk Forwarder package (Windows)
+  ansible.windows.win_package:
+    name: SplunkForwarder
+    state: absent
+  when: os_family == "Windows"
+  tags: [splunk_remove]
