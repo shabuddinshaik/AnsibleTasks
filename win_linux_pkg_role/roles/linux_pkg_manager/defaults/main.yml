@@ -1,0 +1,6 @@
+---
+pkg_name: ""
+pkg_version: "latest"
+pkg_state: present
+folder_path: ""
+services_to_stop: []

@@ -1,0 +1,2 @@
+Ansible >= 2.9
+winrm

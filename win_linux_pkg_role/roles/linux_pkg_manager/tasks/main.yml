@@ -1,0 +1,9 @@
+---
+- name: Manage Packages on Linux
+  include_tasks: manage_package.yml
+
+- name: Manage Services on Linux
+  include_tasks: service_management.yml
+
+- name: Manage Folders on Linux
+  include_tasks: folder_management.yml

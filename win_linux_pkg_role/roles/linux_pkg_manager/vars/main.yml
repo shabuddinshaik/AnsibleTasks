@@ -1,0 +1,8 @@
+---
+pkg_name: ""
+desired_version: ""
+folder_path: ""
+services_to_stop: []
+manage_package: true
+manage_services: true
+manage_folders: true

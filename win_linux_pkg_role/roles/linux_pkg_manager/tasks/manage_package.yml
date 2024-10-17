@@ -1,0 +1,18 @@
+---
+- name: Check current version of package
+  command: "dpkg-query --showformat='${{ pkg_name }}' --show {{ pkg_name }}"
+  register: current_version
+  ignore_errors: true
+  when: manage_package
+
+- name: Install or Update Package
+  apt:
+    name: "{{ pkg_name }}={{ desired_version }}"
+    state: present
+  when: manage_package and (current_version.stdout != desired_version)
+
+- name: Remove Package
+  apt:
+    name: "{{ pkg_name }}"
+    state: absent
+  when: manage_package and desired_version is none

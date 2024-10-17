@@ -1,0 +1,9 @@
+---
+pkg_name: ""
+pkg_version: "latest"
+installer_path: ""
+pkg_id: ""
+pkg_state: present
+folder_path: ""
+services_to_stop: []
+

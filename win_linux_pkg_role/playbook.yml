@@ -1,0 +1,22 @@
+---
+- name: Manage Linux and Windows Packages
+  hosts: all
+  gather_facts: true
+  vars:
+    pkg_name: "SomePackage"
+    desired_version: "1.2.3"
+    folder_path: ""
+    services_to_stop:
+      - "FirstService"
+      - "SecondService"
+    
+    # Controls for which tasks to run
+    manage_package: true
+    manage_services: true
+    manage_folders: true
+
+  tasks:
+    - name: Include the appropriate role based on OS
+      include_role:
+        name: "{{ ansible_os_family | lower }}_pkg_manager"
+

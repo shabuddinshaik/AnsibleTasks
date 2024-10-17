@@ -1,0 +1,14 @@
+---
+- name: Stop Services
+  service:
+    name: "{{ item }}"
+    state: stopped
+  loop: "{{ services_to_stop }}"
+  when: manage_services and services_to_stop is defined
+
+- name: Start Services
+  service:
+    name: "{{ item }}"
+    state: started
+  loop: "{{ services_to_stop }}"
+  when: manage_services and services_to_stop is defined

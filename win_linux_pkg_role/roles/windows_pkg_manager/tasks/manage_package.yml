@@ -1,0 +1,19 @@
+---
+- name: Check current version of package
+  win_command: "Get-Package -Name {{ pkg_name }} | Select-Object -ExpandProperty Version"
+  register: current_version
+  ignore_errors: true
+  when: manage_package
+
+- name: Install or Update Package
+  win_package:
+    name: "{{ pkg_name }}"
+    version: "{{ desired_version }}"
+    state: present
+  when: manage_package and (current_version.stdout != desired_version)
+
+- name: Remove Package
+  win_package:
+    name: "{{ pkg_name }}"
+    state: absent
+  when: manage_package and desired_version is none

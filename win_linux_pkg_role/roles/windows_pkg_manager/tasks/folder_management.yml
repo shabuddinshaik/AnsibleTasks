@@ -1,0 +1,6 @@
+---
+- name: Delete Folder
+  win_file:
+    path: "{{ folder_path }}"
+    state: absent
+  when: manage_folders and folder_path != ""

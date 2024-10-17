@@ -1,0 +1,9 @@
+---
+- name: Manage Packages on Windows
+  include_tasks: manage_package.yml
+
+- name: Manage Services on Windows
+  include_tasks: service_management.yml
+
+- name: Manage Folders on Windows
+  include_tasks: folder_management.yml
